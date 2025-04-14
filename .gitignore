@@ -1,4 +1,4 @@
 *.mp4
 *.mov
-ftp_passwort.json
+*sftp_passwort.json
 
