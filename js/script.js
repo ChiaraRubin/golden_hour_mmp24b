@@ -1,6 +1,12 @@
 const sonnenaufgang = await loadSonnenaufgang();
 const sonnenuntergang = await loadSonnenuntergang();
 const tageslaenge = await taegesLaenge();
+const jetzt = new Date();
+const stunden = jetzt.getHours();
+const minuten = jetzt.getMinutes();
+const sekunden = jetzt.getSeconds();
+
+console.log(`Aktuelle Uhrzeit: ${stunden}:${minuten}:${sekunden}`);
 
 // Sonnenaufgang laden
 async function loadSonnenaufgang() {
