@@ -3,14 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/style.css" />
     <title>Golden Hour</title>
   </head>
   <body>
     <section>
-      <h1>Golden Hour</h1>
-      <input type="text" name="Type in a city..." id="suchFeld" />
-      <button type="submit" id="suchButton">Search</button>
+      <h1 id="titelWebsite">GOLDEN HOUR</h1>
+      <div id="stadtEingabeUndAnzeige">
+        <div id="stadtEingabe">
+          <input type="text" placeholder="Type in a city..." id="suchFeld" />
+          <button type="submit" id="suchButton">Search</button>
+        </div>
+        <div id="stadtAnzeige">
+          <h2 id="stadtName"></h2>
+          <div id="latitudeLongitude">
+            <p id="stadtLatitude"></p>
+            <p id="stadtLongitude"></p>
+          </div>
+        </div>
+      </div>
     </section>
     <section>
       <!-- world -->
@@ -18,13 +35,13 @@
     <section>
       <!-- sun position -->
       <div id="container">
-        <p id="sonnenaufgangZeit">...</p>
+        <p id="sonnenaufgangZeit"></p>
         <div id="sonnenstandBogen">
           <img src="src/sun.png" alt="eine Sonne in Orange" id="sun" />
         </div>
-        <p id="sonnenuntergangsZeit">...</p>
+        <p id="sonnenuntergangsZeit"></p>
       </div>
-      <p id="aktuelleZeit">...</p>
+      <p id="aktuelleZeit"></p>
     </section>
     <script type="module" src="js/script.js"></script>
   </body>
