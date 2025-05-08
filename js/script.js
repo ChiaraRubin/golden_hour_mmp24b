@@ -2,20 +2,34 @@
 let suchbegriff = "";
 let urlOrtschaft = "";
 
-function speichern() {
+async function speichern() {
   suchbegriff = document.querySelector("#suchFeld").value;
   urlOrtschaft = `https://nominatim.openstreetmap.org/search?city=${suchbegriff}&format=json`;
+  console.log(urlOrtschaft);
+  let ortschaft = await loadOrtschaft(urlOrtschaft);
+  console.log(ortschaft);
 }
 
 // Button wird in eine Variabel gespeichert + mit dem Klick auf "Suchen" werden die Daten gefeched
 const buttonSuche = document.querySelector("#suchButton");
 buttonSuche.addEventListener("click", function ladeDatenOrt() {
   speichern();
-  alert("Test");
+  //alert("Test");
 });
 
-//Alert wird nicht angezeigt
+async function loadOrtschaft(url) {
+  try {
+    const response = await fetch(url);
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+//----------------------------------------------------------------------------
 // Vorlage Pokemon
+/*
 const all_pokemon = await loadPokemon();
 let all_pokemon_with_details = [];
 
@@ -71,3 +85,4 @@ all_pokemon_with_details.forEach((pokemon) => {
             </div>`;
   cards_container.innerHTML += card;
 });
+*/
