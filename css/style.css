@@ -9,6 +9,10 @@ body {
   background-color: #edc9ad;
 }
 
+body.nacht {
+  background-color: #2b2b2b;
+}
+
 #titelWebsite,
 #stadtName,
 #stadtLatitude,
