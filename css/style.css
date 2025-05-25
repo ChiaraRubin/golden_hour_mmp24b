@@ -3,14 +3,17 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Roboto", sans-serif;
-}
-
-body {
   background-color: #edc9ad;
 }
 
+body,
+html {
+  overflow-x: hidden;
+}
+
 body.nacht {
-  background-color: #2b2b2b;
+  /* background-color: #edc9ad;/*
+  /*background-color: #2b2b2b;*/
 }
 
 #titelWebsite,
@@ -70,16 +73,66 @@ body.nacht {
 
 #container {
   width: 100%;
-  max-width: 40em;
-  margin: 0 auto;
+  padding-top: 10vw;
+  padding-bottom: 10vw;
+  flex-wrap: wrap;
+  padding-bottom: 10vw;
 }
 
 #sonnenstandBogen {
-  width: 100%;
-  padding-top: 100%;
-  border: 0.2em solid;
+  position: absolute; /* aus dem Fluss, nicht verschiebend */
+  top: 50vw; /* nach unten verschieben, je nach Bedarf */
+  left: 50%;
+  transform: translateX(-50%);
+  clip-path: inset(0 0 50% 0);
+  width: 150vw;
+  height: 150vw;
+
+  border: 0.2em solid #563723;
   border-bottom: none;
-  border-radius: 50% 50% 0 0;
-  position: relative;
+  border-radius: 50%;
+
+  overflow: hidden;
   box-sizing: border-box;
+}
+
+#sun {
+  position: absolute;
+  width: 2em;
+  height: 2em;
+  top: 50%; /* Beispielwert */
+  left: 50%; /* Beispielwert */
+  transform: translate(-50%, -50%);
+}
+
+#sonnenInfo {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  width: 90%;
+  margin: 5vw auto 0 auto; /* oben etwas mehr Abstand */
+  padding-top: 5vw;
+  color: #563723;
+  z-index: 2;
+  position: relative;
+}
+
+.infoBlock {
+  flex: 1;
+}
+
+.infoBlock p:first-child {
+  font-weight: 400;
+  font-size: 1em;
+}
+
+.infoBlock p:last-child {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+#sonnenaufgangZeit,
+#sonnenuntergangsZeit,
+#aktuelleZeit {
+  display: none;
 }

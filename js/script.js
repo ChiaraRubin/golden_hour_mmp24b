@@ -7,9 +7,19 @@ let aktuelleTageszeit = "";
 let urlSonnenstand = "";
 let backgroundColor = document.querySelector("body");
 
-// Uhrzeit Hintergrundfarbenwechsel
-// Wenn aktuelle Zeit, let jetzt = new Date() kleiner ist als sonnenUntergang, gib mir die Hintergrundfarbe #edc9ad aus. Andernfalls gib die Hintergrundfarbe #2b2b2b aus.
+// Uhrzeit Hintergrundfarbenwechsel klappt noch nicht
+// Was soll geschehen? Wenn aktuelle Zeit, let jetzt = new Date() kleiner ist als sonnenUntergang, gib mir die Hintergrundfarbe #edc9ad aus. Andernfalls gib die Hintergrundfarbe #2b2b2b aus.
+let sonnenUntergangWert = document.querySelector("#sonnenuntergangsZeit").value;
+let jetzt = new Date();
 
+let sonnenuntergang = new Date(sonnenUntergangWert);
+
+if (sonnenuntergang > jetzt) {
+  document.body.style.backgroundColor = "#edc9ad"; // Tag
+} else {
+  document.body.style.backgroundColor = "#2b2b2b"; // Nacht
+}
+//------------------------------------------------------------------------
 async function sonnenZeiten(lat, lon) {
   urlSonnenstand = `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&tzid=Europe/Berlin`;
   let sonnenstand = await loadSonne(urlSonnenstand);
@@ -60,6 +70,13 @@ async function speichern() {
     document.querySelector("#sonnenuntergangsZeit").textContent =
       sonnenZeitenObjekt.sunset;
     document.querySelector("#aktuelleZeit").textContent =
+      sonnenZeitenObjekt.day_length;
+
+    document.querySelector("#sunriseTime").textContent =
+      sonnenZeitenObjekt.sunrise;
+    document.querySelector("#sunsetTime").textContent =
+      sonnenZeitenObjekt.sunset;
+    document.querySelector("#duration").textContent =
       sonnenZeitenObjekt.day_length;
   } else {
     console.log("Keine Daten gefunden.");
