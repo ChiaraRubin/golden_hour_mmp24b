@@ -6,14 +6,11 @@
   background-color: #edc9ad;
 }
 
-body,
-html {
+html,
+body {
   overflow-x: hidden;
-}
-
-body.nacht {
-  /* background-color: #edc9ad;/*
-  /*background-color: #2b2b2b;*/
+  overflow: hidden;
+  overflow-y: auto; /* oder: hidden, falls du gar keinen Scroll willst */
 }
 
 #titelWebsite,
@@ -33,12 +30,14 @@ body.nacht {
 
 #titelWebsite {
   font-weight: 400;
+  font-size: 4vw;
   text-align: center;
-  padding: 20%;
+  padding: 10%;
 }
 
 #stadtEingabeUndAnzeige {
   justify-content: space-evenly;
+  padding: 5%;
 }
 
 #stadtEingabe {
@@ -73,36 +72,31 @@ body.nacht {
 
 #container {
   width: 100%;
-  padding-top: 10vw;
-  padding-bottom: 10vw;
+  height: 20vw;
+  padding-top: 1vw;
   flex-wrap: wrap;
-  padding-bottom: 10vw;
 }
 
 #sonnenstandBogen {
-  position: absolute; /* aus dem Fluss, nicht verschiebend */
-  top: 50vw; /* nach unten verschieben, je nach Bedarf */
+  position: relative;
   left: 50%;
   transform: translateX(-50%);
-  clip-path: inset(0 0 50% 0);
   width: 150vw;
   height: 150vw;
-
-  border: 0.2em solid #563723;
+  border: 0.2em solid #ffffff;
   border-bottom: none;
   border-radius: 50%;
-
-  overflow: hidden;
   box-sizing: border-box;
+  z-index: 1;
 }
 
 #sun {
   position: absolute;
   width: 2em;
   height: 2em;
-  top: 50%; /* Beispielwert */
-  left: 50%; /* Beispielwert */
+  left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 3;
 }
 
 #sonnenInfo {
@@ -110,7 +104,7 @@ body.nacht {
   justify-content: space-between;
   text-align: center;
   width: 90%;
-  margin: 5vw auto 0 auto; /* oben etwas mehr Abstand */
+  margin: 5vw auto 5vw auto;
   padding-top: 5vw;
   color: #563723;
   z-index: 2;
@@ -135,4 +129,35 @@ body.nacht {
 #sonnenuntergangsZeit,
 #aktuelleZeit {
   display: none;
+}
+
+#erdeSection {
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2vw;
+}
+
+#erdeContainer {
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 3;
+}
+
+#erde {
+  width: 60%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 3;
+}
+
+#bogenUndZeit {
+  overflow: hidden;
+  padding-top: 15%;
 }
