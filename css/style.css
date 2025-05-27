@@ -3,7 +3,6 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Roboto", sans-serif;
-  background-color: #edc9ad;
 }
 
 html,
@@ -13,10 +12,13 @@ body {
   overflow-y: auto; /* oder: hidden, falls du gar keinen Scroll willst */
 }
 
+body {
+  background-color: #edc9ad;
+}
+
 #titelWebsite,
 #stadtName,
-#stadtLatitude,
-#stadtLongitude,
+#latitudeLongitude,
 #suchButton {
   color: #563723;
 }

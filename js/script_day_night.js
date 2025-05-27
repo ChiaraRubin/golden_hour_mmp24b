@@ -1,9 +1,6 @@
 let url = "";
 let now = new Date();
-let jetzt = now.toLocaleTimeString("de-DE");
-console.log("jetzt"); // z. B. "14:42:17"
-console.log(jetzt); // z. B. "14:42:17"
-// jetzt.setHours(20, 0, 0, 0); // 21:00:00.000
+now.setUTCHours(2, 0, 0, 0);
 
 let lat = 46.9481;
 let lon = 7.4;
@@ -20,12 +17,22 @@ console.log(daytimes.results.sunset); // 9:13:19 PM
 let sunrise = formatDate(daytimes.results.sunrise);
 let sunset = formatDate(daytimes.results.sunset);
 
+let nextSunrise = new Date(sunrise);
+if (now > sunset) {
+  nextSunrise.setDate(nextSunrise.getDate() + 1);
+}
+
 // let SonnenUntergangTest = new Date();
 // SonnenUntergangTest.setHours(23, 0, 0, 0);
-if (jetzt > sunset) {
+if (now >= sunset || now <= nextSunrise) {
   console.log("Es ist dunkel");
+  document.querySelector("body").style.backgroundColor = "#2b2b2b";
 } else {
+  console.log(now);
+  console.log(sunset);
+  console.log(nextSunrise);
   console.log("Es ist hell");
+  document.querySelector("body").style.backgroundColor = "#edc9ad";
 }
 
 async function loadSonne(url) {
