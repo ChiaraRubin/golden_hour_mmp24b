@@ -163,3 +163,87 @@ body {
   overflow: hidden;
   padding-top: 15%;
 }
+
+@media only screen and (max-width: 740px) {
+  #stadtName {
+    font-size: 16px;
+  }
+  #latitudeLongitude {
+    font-size: 12px;
+  }
+  #suchFeld {
+    width: 70%;
+    font-size: 12px;
+  }
+  #sonnenInfo {
+    font-size: 14px;
+  }
+  #suchButton {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-width: 560px) {
+  #stadtName {
+    font-size: 14px;
+  }
+  #latitudeLongitude {
+    font-size: 11px;
+  }
+  #suchFeld {
+    width: 60%;
+  }
+  #sonnenInfo {
+    font-size: 12px;
+  }
+  #suchFeld::placeholder {
+    font-size: 12px;
+  }
+  #suchButton {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  #stadtName {
+    font-size: 12px;
+  }
+  #latitudeLongitude {
+    font-size: 10px;
+  }
+  #suchFeld {
+    width: 50%;
+    font-size: 11px;
+  }
+  #sonnenInfo {
+    font-size: 11px;
+  }
+  #suchFeld::placeholder {
+    font-size: 10px;
+  }
+  #suchButton {
+    font-size: 10px;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  #stadtName {
+    font-size: 12px;
+  }
+  #latitudeLongitude {
+    font-size: 9px;
+    display: block;
+  }
+  #suchFeld {
+    width: 50%;
+  }
+  #sonnenInfo {
+    font-size: 11px;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  #latitudeLongitude {
+    font-size: 8px;
+  }
+}

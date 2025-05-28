@@ -72,6 +72,10 @@ async function tagNachtHintergrund(lat, lon) {
     console.log("Es ist dunkel");
   } else {
     document.querySelector("body").style.backgroundColor = "#edc9ad";
+    document.querySelector("#titelWebsite").style.color = "#563723";
+    document.querySelector("#stadtName").style.color = "#563723";
+    document.querySelector("#latitudeLongitude").style.color = "#563723";
+    document.querySelector("#sonnenInfo").style.color = "#563723";
     console.log("Es ist hell");
     console.log(now);
     console.log(sunset);
