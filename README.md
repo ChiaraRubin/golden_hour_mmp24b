@@ -10,6 +10,8 @@
 
 **Chiara Rubin:** Am meisten gelernt habe ich beim Verbinden der APIs über die URL. Besonders hilfreich war auch das Debugging mit “console.log”, um Fehler zu identifizieren und zu beheben. Erfolgserlebnisse hatte ich u.a. beim korrekten Ansprechen und Modifizieren von HTML-Tags mit JavaScript, z.B. beim Anpassen des Hintergrunds je nach Tageszeit mithilfe von if-else-Bedingungen. Eine grössere Herausforderung stellte die korrekte Darstellung der Sonne entlang des Sonnenbogens dar – selbst mit Unterstützung durch KI und die Dozierenden. Zwar gelang es uns, die Sonne auf dem Bogen anzuzeigen (und nicht daneben), jedoch stimmen die Winkel nicht immer exakt. In manchen Fällen befindet sich die Sonne deshalb ausserhalb des sichtbaren Bereichs. Wir haben viel Zeit investiert, mussten aber feststellen, dass die exakte Winkelberechnung unsere mathematischen Kenntnisse übersteigt.
 
+**Anmerkung:** Die Position der Sonne wird leider nicht ganz korrekt dargestellt. Wer jedoch die Sonne auf dem Sonnenbogen sehen möchte, kann eine Stadt auswählen, in der es zurzeit Mittag oder kurz nach Mittag ist (Zeitrange zwischen 11:00 Uhr und 16:00 Uhr).
+
 ## Benutzte Ressourcen und Prompts
 
 ### APIs

@@ -224,7 +224,6 @@ async function speichern() {
       // Tag-/Nacht-Hintergrund setzen
       await tagNachtHintergrund(lat, lon);
     } else {
-      console.log("Keine Daten für diese Stadt gefunden.");
       alert(
         "Stadt nicht gefunden. Bitte versuchen Sie es mit einer anderen Stadt."
       );
