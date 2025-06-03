@@ -8,87 +8,79 @@ let aktuelleTageszeit = "";
 let urlSonnenstand = "";
 let backgroundColor = document.querySelector("body");
 
-function parseUtcTimeToLocal(apiTimeString, timeZone) {
-  const heute = new Date().toISOString().split("T")[0];
-  const [time, meridian] = apiTimeString.split(" ");
-  let [hours, minutes, seconds] = time.split(":").map(Number);
-
-  if (meridian === "PM" && hours !== 12) hours += 12;
-  if (meridian === "AM" && hours === 12) hours = 0;
-
-  // Erzeuge ISO-Zeitstring als UTC-Zeit
-  const utcIsoString = `${heute}T${String(hours).padStart(2, "0")}:${String(
-    minutes
-  ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}Z`;
-
-  const dateUtc = new Date(utcIsoString);
-
-  return dateUtc.toLocaleTimeString("de-DE", {
-    timeZone: timeZone,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+function formatDuration(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${hours}:${minutes.toString().padStart(2, "0")} h`;
 }
 
-// **ÄNDERUNG 2: Funktion, um API-Zeit als UTC-Date-Objekt zu bekommen (für Vergleich und Berechnung)**
-function parseUtcTimeToDate(apiTimeString) {
-  const heute = new Date().toISOString().split("T")[0];
-  const [time, meridian] = apiTimeString.split(" ");
-  let [hours, minutes, seconds] = time.split(":").map(Number);
+async function getSunriseSunset(lat, lon) {
+  const timezone = await loadZeitzone(lat, lon);
 
-  if (meridian === "PM" && hours !== 12) hours += 12;
-  if (meridian === "AM" && hours === 12) hours = 0;
+  const apiUrl = `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0`;
+  const response = await fetch(apiUrl);
+  const data = await response.json();
 
-  return new Date(
-    `${heute}T${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-      2,
-      "0"
-    )}:${String(seconds).padStart(2, "0")}Z`
-  );
+  const sunrise = new Date(data.results.sunrise);
+  const sunset = new Date(data.results.sunset);
+
+  return {
+    sunriseLocal: sunrise.toLocaleTimeString("de-DE", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }),
+    sunsetLocal: sunset.toLocaleTimeString("de-DE", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }),
+    sunriseDate: sunrise,
+    sunsetDate: sunset,
+    duration: formatDuration(data.results.day_length),
+    timezone: timezone,
+  };
 }
 
-// **ÄNDERUNG 3: tagNachtHintergrund mit neuem Parsing**
 async function tagNachtHintergrund(lat, lon) {
-  const urlSonnenstand = `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&tzid=Europe/Berlin`;
-  const sonnenstand = await loadSonne(urlSonnenstand);
+  try {
+    const sunData = await getSunriseSunset(lat, lon);
+    const now = new Date();
 
-  let now = new Date();
+    const sunrise = sunData.sunriseDate;
+    const sunset = sunData.sunsetDate;
 
-  const sunrise = parseUtcTimeToDate(sonnenstand.results.sunrise);
-  const sunset = parseUtcTimeToDate(sonnenstand.results.sunset);
+    let nextSunrise = new Date(sunrise);
+    if (now > sunset) {
+      nextSunrise.setDate(nextSunrise.getDate() + 1);
+    }
 
-  let nextSunrise = new Date(sunrise);
-  if (now > sunset) {
-    nextSunrise.setDate(nextSunrise.getDate() + 1);
+    const isNight = now >= sunset || now <= sunrise;
+
+    if (isNight) {
+      document.querySelector("body").style.backgroundColor = "#2b2b2b";
+      document.querySelector("#titelWebsite").style.color = "#ECD2C3";
+      document.querySelector("#stadtName").style.color = "#ECD2C3";
+      document.querySelector("#latitudeLongitude").style.color = "#ECD2C3";
+      document.querySelector("#sonnenInfo").style.color = "#ECD2C3";
+      console.log("Es ist dunkel");
+    } else {
+      document.querySelector("body").style.backgroundColor = "#edc9ad";
+      document.querySelector("#titelWebsite").style.color = "#563723";
+      document.querySelector("#stadtName").style.color = "#563723";
+      document.querySelector("#latitudeLongitude").style.color = "#563723";
+      document.querySelector("#sonnenInfo").style.color = "#563723";
+      console.log("Es ist hell");
+    }
+
+    console.log("Aktuelle Zeit:", now);
+    console.log("Sonnenaufgang:", sunrise);
+    console.log("Sonnenuntergang:", sunset);
+  } catch (error) {
+    console.error("Fehler bei Tag/Nacht Berechnung:", error);
   }
-
-  if (now >= sunset || now <= nextSunrise) {
-    document.querySelector("body").style.backgroundColor = "#2b2b2b";
-    document.querySelector("#titelWebsite").style.color = "#ECD2C3";
-    document.querySelector("#stadtName").style.color = "#ECD2C3";
-    document.querySelector("#latitudeLongitude").style.color = "#ECD2C3";
-    document.querySelector("#sonnenInfo").style.color = "#ECD2C3";
-    console.log("Es ist dunkel");
-  } else {
-    document.querySelector("body").style.backgroundColor = "#edc9ad";
-    document.querySelector("#titelWebsite").style.color = "#563723";
-    document.querySelector("#stadtName").style.color = "#563723";
-    document.querySelector("#latitudeLongitude").style.color = "#563723";
-    document.querySelector("#sonnenInfo").style.color = "#563723";
-    console.log("Es ist hell");
-    console.log(now);
-    console.log(sunset);
-    console.log(nextSunrise);
-  }
-}
-
-//------------------------------------------------------------------------
-async function sonnenZeiten(lat, lon) {
-  urlSonnenstand = `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&tzid=Europe/Berlin`;
-  let sonnenstand = await loadSonne(urlSonnenstand);
-  let sonnenInformationen = sonnenstand.results;
-  return sonnenInformationen;
 }
 
 let lat, lon;
@@ -101,92 +93,100 @@ function convertToDMS(decimal, isLat) {
   const minutes = Math.floor(minutesFloat);
   const seconds = ((minutesFloat - minutes) * 60).toFixed(2);
 
-  return `${degrees}° ${minutes}‘ ${seconds}″ ${dir}`;
+  return `${degrees}° ${minutes}' ${seconds}″ ${dir}`;
 }
 
-// Sonnenpositionierung
-function positioniereSonne(sunrise, sunset) {
+function positioniereSonne(sunriseDate, sunsetDate) {
   const sunImg = document.querySelector("#sun");
+  const bogen = document.querySelector("#sonnenstandBogen");
   const now = new Date();
 
-  const sunriseTime = new Date(sunrise);
-  const sunsetTime = new Date(sunset);
-
-  if (now < sunriseTime || now > sunsetTime) {
+  if (now < sunriseDate || now > sunsetDate) {
     sunImg.style.display = "none";
+    console.log("Sonne versteckt - es ist Nacht");
     return;
   }
 
-  const totalDuration = sunsetTime - sunriseTime;
-  const currentDuration = now - sunriseTime;
-  const t = currentDuration / totalDuration;
+  const totalDuration = sunsetDate - sunriseDate;
+  const currentDuration = now - sunriseDate;
+  const progress = currentDuration / totalDuration;
 
-  const angle = Math.PI * t;
+  console.log(`Sonnenposition: ${(progress * 100).toFixed(1)}% des Tages`);
 
-  const radiusVW = 75;
-  const x = radiusVW * Math.cos(angle - Math.PI);
-  const y = radiusVW * Math.sin(angle - Math.PI);
+  const bogenRadius = 75;
 
-  const xPercent = 50 + x;
-  const yPercent = 100 + y;
+  const angle = Math.PI - progress * Math.PI;
+
+  const x = bogenRadius * Math.cos(angle);
+  const y = bogenRadius * Math.sin(angle);
+
+  const bogenCenterX = 75;
+  const bogenCenterY = 75;
+
+  const finalX = ((bogenCenterX + x) / 150) * 100;
+  const finalY = ((bogenCenterY - y) / 150) * 100;
 
   sunImg.style.display = "block";
-  sunImg.style.left = `${xPercent}%`;
-  sunImg.style.top = `${yPercent}%`;
+  sunImg.style.left = `${finalX}%`;
+  sunImg.style.top = `${finalY}%`;
+  sunImg.style.position = "absolute";
+
+  console.log(
+    `Sonne positioniert bei: ${finalX.toFixed(1)}%, ${finalY.toFixed(
+      1
+    )}% (relativ zum Bogen)`
+  );
 }
 
 async function speichern() {
-  suchbegriff = document.querySelector("#suchFeld").value;
-  sonnenAufgang = document.querySelector("#sonnenaufgangZeit");
-  sonnenUntergang = document.querySelector("#sonnenuntergangsZeit");
-  urlOrtschaft = `https://nominatim.openstreetmap.org/search?city=${suchbegriff}&format=json`;
+  try {
+    suchbegriff = document.querySelector("#suchFeld").value;
 
-  let ortschaft = await loadOrtschaft(urlOrtschaft);
+    if (!suchbegriff) {
+      console.log("Bitte eine Stadt eingeben.");
+      return;
+    }
 
-  if (ortschaft && ortschaft.length > 0) {
-    lat = ortschaft[0].lat;
-    lon = ortschaft[0].lon;
+    sonnenAufgang = document.querySelector("#sonnenaufgangZeit");
+    sonnenUntergang = document.querySelector("#sonnenuntergangsZeit");
+    urlOrtschaft = `https://nominatim.openstreetmap.org/search?city=${suchbegriff}&format=json`;
 
-    let latDMS = convertToDMS(lat, true);
-    let lonDMS = convertToDMS(lon, false);
+    let ortschaft = await loadOrtschaft(urlOrtschaft);
 
-    document.querySelector("#stadtName").textContent = suchbegriff;
-    document.querySelector("#stadtLatitude").textContent = latDMS;
-    document.querySelector("#stadtLongitude").textContent = lonDMS;
+    if (ortschaft && ortschaft.length > 0) {
+      lat = parseFloat(ortschaft[0].lat);
+      lon = parseFloat(ortschaft[0].lon);
 
-    let sonnenZeitenObjekt = await sonnenZeiten(lat, lon);
-    console.log(sonnenZeitenObjekt);
+      let latDMS = convertToDMS(lat, true);
+      let lonDMS = convertToDMS(lon, false);
 
-    let timezone = await loadZeitzone(lat, lon);
+      document.querySelector("#stadtName").textContent = suchbegriff;
+      document.querySelector("#stadtLatitude").textContent = latDMS;
+      document.querySelector("#stadtLongitude").textContent = lonDMS;
 
-    // **Neu: UTC-Zeit als Date-Objekt für Positionierung**
-    const sunriseDate = parseUtcTimeToDate(sonnenZeitenObjekt.sunrise);
-    const sunsetDate = parseUtcTimeToDate(sonnenZeitenObjekt.sunset);
+      const sunData = await getSunriseSunset(lat, lon);
 
-    positioniereSonne(sunriseDate, sunsetDate);
+      console.log("Sonnendaten:", sunData);
 
-    // **Neu: Lokale Zeitstrings für Anzeige**
-    const localSunrise = parseUtcTimeToLocal(
-      sonnenZeitenObjekt.sunrise,
-      timezone
-    );
-    const localSunset = parseUtcTimeToLocal(
-      sonnenZeitenObjekt.sunset,
-      timezone
-    );
+      positioniereSonne(sunData.sunriseDate, sunData.sunsetDate);
 
-    sonnenAufgang.textContent = localSunrise;
-    sonnenUntergang.textContent = localSunset;
-    document.querySelector("#aktuelleZeit").textContent =
-      sonnenZeitenObjekt.day_length;
-    document.querySelector("#sunriseTime").textContent = localSunrise;
-    document.querySelector("#sunsetTime").textContent = localSunset;
-    document.querySelector("#duration").textContent =
-      sonnenZeitenObjekt.day_length;
+      sonnenAufgang.textContent = sunData.sunriseLocal;
+      sonnenUntergang.textContent = sunData.sunsetLocal;
+      document.querySelector("#aktuelleZeit").textContent = sunData.duration;
+      document.querySelector("#sunriseTime").textContent = sunData.sunriseLocal;
+      document.querySelector("#sunsetTime").textContent = sunData.sunsetLocal;
+      document.querySelector("#duration").textContent = sunData.duration;
 
-    await tagNachtHintergrund(lat, lon);
-  } else {
-    console.log("Keine Daten gefunden.");
+      await tagNachtHintergrund(lat, lon);
+    } else {
+      console.log("Keine Daten für diese Stadt gefunden.");
+      alert(
+        "Stadt nicht gefunden. Bitte versuchen Sie es mit einer anderen Stadt."
+      );
+    }
+  } catch (error) {
+    console.error("Fehler beim Laden der Stadtdaten:", error);
+    alert("Fehler beim Laden der Daten. Bitte versuchen Sie es erneut.");
   }
 }
 
@@ -195,12 +195,23 @@ buttonSuche.addEventListener("click", function ladeDatenOrt() {
   speichern();
 });
 
+document
+  .querySelector("#suchFeld")
+  .addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+      speichern();
+    }
+  });
+
 async function loadOrtschaft(url) {
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error("Fehler beim Laden der Ortschaft:", error);
     return false;
   }
 }
@@ -208,9 +219,12 @@ async function loadOrtschaft(url) {
 async function loadSonne(url) {
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error("Fehler beim Laden der Sonnendaten:", error);
     return false;
   }
 }
@@ -220,6 +234,9 @@ async function loadZeitzone(lat, lon) {
   const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${apiKey}`;
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const data = await response.json();
     return data.features[0].properties.timezone.name;
   } catch (error) {
@@ -227,5 +244,3 @@ async function loadZeitzone(lat, lon) {
     return "UTC";
   }
 }
-
-// **ENTFERNT: alte convertUTCToLocalTime, da jetzt eigene Umrechnung mit parseUtcTimeToLocal**
