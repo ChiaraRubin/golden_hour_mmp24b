@@ -9,7 +9,7 @@ html,
 body {
   overflow-x: hidden;
   overflow: hidden;
-  overflow-y: auto; /* oder: hidden, falls du gar keinen Scroll willst */
+  overflow-y: auto;
 }
 
 body {
@@ -101,6 +101,18 @@ body {
   z-index: 3;
 }
 
+/* Aktuelle Uhrzeit Styling */
+#aktuelleUhrzeit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #563723;
+  margin: 3vw 0;
+  text-align: center;
+  font-weight: 400;
+  font-size: 4vw;
+}
+
 #sonnenInfo {
   display: flex;
   justify-content: space-between;
@@ -135,7 +147,6 @@ body {
 
 #erdeSection {
   position: relative;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -147,7 +158,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 3;
 }
 
@@ -157,6 +167,7 @@ body {
   display: block;
   position: relative;
   z-index: 3;
+  border-radius: 50%;
 }
 
 #bogenUndZeit {

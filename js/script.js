@@ -7,6 +7,39 @@ let sonnenUntergang = "";
 let aktuelleTageszeit = "";
 let urlSonnenstand = "";
 let backgroundColor = document.querySelector("body");
+let clockInterval;
+let currentTimezone = null;
+
+// Uhrzeit-Funktion
+function updateClock() {
+  const now = new Date();
+  let timeString;
+
+  if (currentTimezone) {
+    // Zeit der gesuchten Stadt anzeigen
+    timeString = now.toLocaleTimeString("de-DE", {
+      timeZone: currentTimezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+  } else {
+    // Lokale Zeit anzeigen (Standard)
+    timeString = now.toLocaleTimeString("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+  }
+
+  document.querySelector("#uhrzeit").textContent = timeString;
+}
+
+// Uhrzeit sofort starten
+updateClock();
+clockInterval = setInterval(updateClock, 1000);
 
 function formatDuration(seconds) {
   const hours = Math.floor(seconds / 3600);
@@ -65,6 +98,7 @@ async function tagNachtHintergrund(lat, lon) {
       document.querySelector("#stadtName").style.color = "#ECD2C3";
       document.querySelector("#latitudeLongitude").style.color = "#ECD2C3";
       document.querySelector("#sonnenInfo").style.color = "#ECD2C3";
+      document.querySelector("#aktuelleUhrzeit").style.color = "#ECD2C3";
       console.log("Es ist dunkel");
     } else {
       document.querySelector("body").style.backgroundColor = "#edc9ad";
@@ -72,6 +106,7 @@ async function tagNachtHintergrund(lat, lon) {
       document.querySelector("#stadtName").style.color = "#563723";
       document.querySelector("#latitudeLongitude").style.color = "#563723";
       document.querySelector("#sonnenInfo").style.color = "#563723";
+      document.querySelector("#aktuelleUhrzeit").style.color = "#563723";
       console.log("Es ist hell");
     }
 
@@ -114,9 +149,7 @@ function positioniereSonne(sunriseDate, sunsetDate) {
   console.log(`Sonnenposition: ${(progress * 100).toFixed(1)}% des Tages`);
 
   const bogenRadius = 75;
-
   const angle = Math.PI - progress * Math.PI;
-
   const x = bogenRadius * Math.cos(angle);
   const y = bogenRadius * Math.sin(angle);
 
@@ -165,6 +198,9 @@ async function speichern() {
       document.querySelector("#stadtLongitude").textContent = lonDMS;
 
       const sunData = await getSunriseSunset(lat, lon);
+
+      // Zeitzone für die Uhrzeit setzen
+      currentTimezone = sunData.timezone;
 
       console.log("Sonnendaten:", sunData);
 
@@ -241,6 +277,26 @@ async function loadZeitzone(lat, lon) {
     return data.features[0].properties.timezone.name;
   } catch (error) {
     console.error("Fehler beim Laden der Zeitzone:", error);
-    return "UTC";
+    // Fallback: Versuche Zeitzone basierend auf Koordinaten zu bestimmen
+    return getTimezoneFromCoordinates(lat, lon);
   }
+}
+
+// Fallback-Funktion für Zeitzone basierend auf Koordinaten
+function getTimezoneFromCoordinates(lat, lon) {
+  // Einfache Zeitzonenbestimmung basierend auf Längengrad
+  const offset = Math.round(lon / 15);
+
+  // Einige bekannte Zeitzonen für bessere Genauigkeit
+  if (lat >= 35 && lat <= 71 && lon >= -10 && lon <= 40) {
+    // Europa
+    if (lon >= -10 && lon <= 5) return "Europe/London";
+    if (lon >= 5 && lon <= 15) return "Europe/Berlin";
+    if (lon >= 15 && lon <= 30) return "Europe/Warsaw";
+    if (lon >= 30 && lon <= 40) return "Europe/Moscow";
+  }
+
+  // Fallback zu UTC mit Offset
+  if (offset === 0) return "UTC";
+  return offset > 0 ? `Etc/GMT-${offset}` : `Etc/GMT+${Math.abs(offset)}`;
 }
